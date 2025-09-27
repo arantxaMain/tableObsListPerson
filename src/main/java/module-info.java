@@ -4,6 +4,6 @@ module es.arantxa {
     requires org.slf4j;
     requires javafx.graphics;
 
-    opens es.arantxa to javafx.fxml;
+    opens es.arantxa.controller to javafx.fxml;
     exports es.arantxa;
 }
