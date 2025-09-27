@@ -11,6 +11,8 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -24,6 +26,8 @@ import java.util.ResourceBundle;
  * la tabla con datos predefinidos.
  */
 public class TablaController implements Initializable {
+
+    private static final Logger logger = LoggerFactory.getLogger(TablaController.class);
 
     @FXML
     private DatePicker dateBirth;
@@ -43,9 +47,10 @@ public class TablaController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        logger.info("Inicializando TablaController...");
         setupTableColumns();
-
         loadInitialData();
+        logger.info("Tabla inicializada con {} personas.", personList.size());
     }
 
     private void setupTableColumns() {
@@ -55,17 +60,16 @@ public class TablaController implements Initializable {
         tableView.getColumns().add(PersonTableUtil.getFirstNameColumn());
         tableView.getColumns().add(PersonTableUtil.getLastNameColumn());
         tableView.getColumns().add(PersonTableUtil.getBirthDateColumn());
+        logger.debug("Columnas de la tabla configuradas.");
     }
 
 
     private void loadInitialData() {
         personList = PersonTableUtil.getPersonList();
-
         assignPersonIds();
-
         backupList = FXCollections.observableArrayList(personList);
-
         tableView.setItems(personList);
+        logger.debug("Datos iniciales cargados y backup creado.");
     }
 
 
@@ -73,6 +77,7 @@ public class TablaController implements Initializable {
         for (int i = 0; i < personList.size(); i++) {
             personList.get(i).setPersonId(i + 1);
         }
+        logger.debug("IDs de personas asignados.");
     }
 
     @FXML
@@ -88,10 +93,11 @@ public class TablaController implements Initializable {
             newPerson.setPersonId(getNextPersonId());
 
             personList.add(newPerson);
-
+            logger.info("Persona agregada: {}", newPerson);
             clearInputFields();
 
         } else {
+            logger.warn("Error al agregar persona: {}", errors);
             showErrorAlert(errors);
         }
     }
@@ -101,13 +107,14 @@ public class TablaController implements Initializable {
         ObservableList<Person> selectedPersons = tableView.getSelectionModel().getSelectedItems();
 
         if (selectedPersons.isEmpty()) {
+            logger.info("Intento de eliminar sin selección.");
             showInfoAlert("No hay filas seleccionadas", "Por favor, selecciona al menos una fila para eliminar.");
             return;
         }
 
         List<Person> toRemove = new ArrayList<>(selectedPersons);
-
         personList.removeAll(toRemove);
+        logger.info("Personas eliminadas: {}", toRemove);
     }
 
     @FXML
@@ -116,16 +123,16 @@ public class TablaController implements Initializable {
         personList.addAll(backupList);
 
         assignPersonIds();
+        logger.info("Lista restaurada a estado inicial con {} personas.", backupList.size());
     }
 
     /**
      * Obtiene el siguiente ID disponible para una nueva persona
      */
     private int getNextPersonId() {
-        return personList.stream()
-                .mapToInt(Person::getPersonId)
-                .max()
-                .orElse(0) + 1;
+        int nextId = personList.stream().mapToInt(Person::getPersonId).max().orElse(0) + 1;
+        logger.debug("Siguiente ID disponible: {}", nextId);
+        return nextId;
     }
 
     /**
@@ -135,6 +142,7 @@ public class TablaController implements Initializable {
         txtFirstName.clear();
         txtLastName.clear();
         dateBirth.setValue(null);
+        logger.debug("Campos de entrada limpiados.");
     }
 
     /**
