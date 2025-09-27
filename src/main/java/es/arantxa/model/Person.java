@@ -135,7 +135,8 @@ public class Person {
      */
     public boolean isValidBirthDate(LocalDate bdate, List<String> errorList) {
         if (bdate == null) {
-            return true;
+            errorList.add("Debes seleccionar una fecha");
+            return false;
         }
         if (bdate.isAfter(LocalDate.now())) {
             errorList.add("La fecha de nacimiento no puede estar en el futuro.");

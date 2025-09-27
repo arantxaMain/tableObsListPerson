@@ -5,5 +5,6 @@ module es.arantxa {
     requires javafx.graphics;
 
     opens es.arantxa.controller to javafx.fxml;
+    opens es.arantxa.model to javafx.base;
     exports es.arantxa;
 }
