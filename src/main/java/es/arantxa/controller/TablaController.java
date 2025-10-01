@@ -65,20 +65,20 @@ public class TablaController implements Initializable {
 
 
     private void loadInitialData() {
-        personList = PersonTableUtil.getPersonList();
-        assignPersonIds();
-        backupList = FXCollections.observableArrayList(personList);
-        tableView.setItems(personList);
-        logger.debug("Datos iniciales cargados y backup creado.");
-    }
-
-
-    private void assignPersonIds() {
-        for (int i = 0; i < personList.size(); i++) {
-            personList.get(i).setPersonId(i + 1);
+        try {
+            personList = PersonTableUtil.getPersonList();
+            backupList = FXCollections.observableArrayList(personList);
+            tableView.setItems(personList);
+            logger.debug("Datos iniciales cargados y backup creado.");
+        } catch (Exception e) {
+            logger.error("Error al cargar datos.", e);
+            showWarningAlert("Problema de conexión", "Error al cargar datos.");
+            personList = FXCollections.observableArrayList();
+            backupList = FXCollections.observableArrayList();
+            tableView.setItems(personList);
         }
-        logger.debug("IDs de personas asignados.");
     }
+
 
     @FXML
     void btnAddClick(ActionEvent event) {
@@ -122,7 +122,6 @@ public class TablaController implements Initializable {
         personList.clear();
         personList.addAll(backupList);
 
-        assignPersonIds();
         logger.info("Lista restaurada a estado inicial con {} personas.", backupList.size());
     }
 
@@ -161,6 +160,14 @@ public class TablaController implements Initializable {
      */
     private void showInfoAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private void showWarningAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
