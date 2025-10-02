@@ -1,6 +1,8 @@
 package es.arantxa.controller;
 
+import es.arantxa.dao.PersonDAO;
 import es.arantxa.model.Person;
+import es.arantxa.util.AlertUtil;
 import es.arantxa.util.PersonTableUtil;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -10,7 +12,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Alert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,12 +43,13 @@ public class TablaController implements Initializable {
     private TextField txtLastName;
 
     private ObservableList<Person> personList;
-
     private ObservableList<Person> backupList;
+    private PersonDAO personDAO;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         logger.info("Inicializando TablaController...");
+        personDAO = new PersonDAO();
         setupTableColumns();
         loadInitialData();
         logger.info("Tabla inicializada con {} personas.", personList.size());
@@ -63,22 +65,23 @@ public class TablaController implements Initializable {
         logger.debug("Columnas de la tabla configuradas.");
     }
 
-
     private void loadInitialData() {
         try {
-            personList = PersonTableUtil.getPersonList();
+            personList = personDAO.listarPersonas();
             backupList = FXCollections.observableArrayList(personList);
             tableView.setItems(personList);
             logger.debug("Datos iniciales cargados y backup creado.");
         } catch (Exception e) {
-            logger.error("Error al cargar datos.", e);
-            showWarningAlert("Problema de conexión", "Error al cargar datos.");
+            logger.error("Error al cargar datos desde la base de datos", e);
+            AlertUtil.mostrarError("Problema de conexión",
+                    "No se pudieron cargar los datos desde la base de datos.\n" +
+                            "Error: " + e.getMessage());
+            // Inicializar listas vacías para que la aplicación siga funcionando
             personList = FXCollections.observableArrayList();
             backupList = FXCollections.observableArrayList();
             tableView.setItems(personList);
         }
     }
-
 
     @FXML
     void btnAddClick(ActionEvent event) {
@@ -91,14 +94,12 @@ public class TablaController implements Initializable {
         List<String> errors = new ArrayList<>();
         if (newPerson.isValidPerson(errors)) {
             newPerson.setPersonId(getNextPersonId());
-
             personList.add(newPerson);
             logger.info("Persona agregada: {}", newPerson);
             clearInputFields();
-
         } else {
             logger.warn("Error al agregar persona: {}", errors);
-            showErrorAlert(errors);
+            AlertUtil.mostrarErrorValidacion(errors);
         }
     }
 
@@ -108,7 +109,8 @@ public class TablaController implements Initializable {
 
         if (selectedPersons.isEmpty()) {
             logger.info("Intento de eliminar sin selección.");
-            showInfoAlert("No hay filas seleccionadas", "Por favor, selecciona al menos una fila para eliminar.");
+            AlertUtil.mostrarInformacion("No hay filas seleccionadas",
+                    "Por favor, selecciona al menos una fila para eliminar.");
             return;
         }
 
@@ -121,7 +123,6 @@ public class TablaController implements Initializable {
     void btnRestoreClick(ActionEvent event) {
         personList.clear();
         personList.addAll(backupList);
-
         logger.info("Lista restaurada a estado inicial con {} personas.", backupList.size());
     }
 
@@ -142,35 +143,5 @@ public class TablaController implements Initializable {
         txtLastName.clear();
         dateBirth.setValue(null);
         logger.debug("Campos de entrada limpiados.");
-    }
-
-    /**
-     * Muestra un diálogo de error con la lista de errores
-     */
-    private void showErrorAlert(List<String> errors) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error de Validación");
-        alert.setHeaderText("Los siguientes errores deben ser corregidos:");
-        alert.setContentText(String.join("\n", errors));
-        alert.showAndWait();
-    }
-
-    /**
-     * Muestra un diálogo informativo
-     */
-    private void showInfoAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    private void showWarningAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 }

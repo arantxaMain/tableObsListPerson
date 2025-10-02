@@ -42,4 +42,52 @@ public class PersonDAO {
         }
         return lstPersonas;
     }
+
+    /**
+     * Elimina una persona de la base de datos según su identificador único.
+     *
+     * @param personId el identificador único de la persona a eliminar
+     * @return {@code true} si la persona fue eliminada con éxito,
+     * {@code false} si no se encontró ninguna coincidencia
+     * @throws Exception si ocurre un error al conectar con la base de datos o ejecutar la operación
+     */
+    public boolean borrarPersona(int personId) throws Exception {
+        String sql = "DELETE FROM personas WHERE person_id = ?";
+
+        try (Connection conn = DBConnection.conexion();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, personId);
+            int filasAfectadas = stmt.executeUpdate();
+
+            return filasAfectadas > 0;
+        }
+    }
+
+    /**
+     * Inserta una nueva persona en la base de datos con los valores
+     * proporcionados en el objeto {@link es.arantxa.model.Person}.
+     *
+     * @param p el objeto {@link es.arantxa.model.Person} que contiene
+     *          el nombre, apellidos y fecha de nacimiento de la persona
+     * @return {@code true} si la persona fue insertada correctamente,
+     * {@code false} si no se insertó ningún registro
+     * @throws Exception si ocurre un error al conectar con la base de datos o ejecutar la operación
+     */
+    public boolean insertarPersona(Person p) throws Exception {
+        String sql = "INSERT INTO personas (first_name, last_name, birth_date) values (?, ?, ?) ";
+
+        try (Connection conn = DBConnection.conexion();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, p.getFirstName());
+            stmt.setString(2, p.getLastName());
+            stmt.setDate(3, java.sql.Date.valueOf(p.getBirthDate()));
+
+            int filasAfectadas = stmt.executeUpdate();
+            return filasAfectadas > 0;
+
+        }
+    }
+
 }
