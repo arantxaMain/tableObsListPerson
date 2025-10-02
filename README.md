@@ -2,7 +2,7 @@
 
 Una aplicación JavaFX que permite gestionar una tabla de personas con funcionalidades para agregar, eliminar y restaurar registros.
 
-## Descripción
+## 📝 Descripción
 
 Esta aplicación proporciona una interfaz gráfica simple para:
 - Visualizar una tabla de personas con datos como ID, nombre, apellido y fecha de nacimiento
@@ -11,7 +11,7 @@ Esta aplicación proporciona una interfaz gráfica simple para:
 - Restaurar la tabla a su estado inicial
 - Validación de datos de entrada
 
-## Características
+## ✨ Características
 
 - **Interfaz intuitiva**: Formulario simple con campos de entrada y botones de acción
 - **Validación de datos**: Verificación automática de nombres, apellidos y fechas de nacimiento
@@ -19,14 +19,14 @@ Esta aplicación proporciona una interfaz gráfica simple para:
 - **Categorización por edad**: Clasificación automática en BABY, CHILD, TEEN, ADULT, SENIOR
 - **Arquitectura modular**: Separación clara entre modelo, vista y controlador
 
-## Tecnologías
+## 🛠 Tecnologías
 
 - **Java 21+**
 - **JavaFX 21+**
 - **FXML** para el diseño de la interfaz
 - **SLF4J** para logging
 
-## Estructura del proyecto
+## 📁 Estructura del proyecto
 
 ```
 src/
@@ -34,25 +34,47 @@ src/
 │   ├── java/
 │   │   ├── es/arantxa/
 │   │   │   ├── App.java                    # Clase principal
+│   │   │   ├── Lanzador.java               # Clase de lanzamiento
+│   │   │   ├── connection/
+│   │   │   │   └── DBConnection.java       # Conexión a la base de datos
 │   │   │   ├── controller/
 │   │   │   │   └── TablaController.java    # Controlador de la interfaz
+│   │   │   ├── dao/
+│   │   │   │   └── PersonDAO.java          # Acceso a datos de personas
 │   │   │   ├── model/
 │   │   │   │   └── Person.java             # Modelo de datos
 │   │   │   └── util/
+│   │   │       ├── AlertUtil.java          # Utilidades para alertas
 │   │   │       └── PersonTableUtil.java    # Utilidades para la tabla
 │   │   └── module-info.java                # Configuración del módulo
 │   └── resources/
+│       ├── db.properties                   # Configuración de la base de datos
+│       ├── logback.xml                     # Configuración de logging
+│       ├── META-INF/
+│       │   └── MANIFEST.MF                 # Manifiesto
 │       └── fxml/
 │           └── tabla.fxml                  # Diseño de la interfaz
 ```
 
-## Requisitos
+## 🔗 Conexión a la base de datos
+
+La aplicación utiliza una base de datos para persistir la información de las personas. La configuración se realiza mediante el archivo `db.properties` en el directorio `resources`.
+
+```properties
+db.url=url de la base de datos
+db.user=usuario
+db.password=contraseña
+```
+> ⚠️ Este archivo se incluirá en el repositorio con valores vacíos para que cada desarrollador configure sus propias credenciales localmente.
+
+
+## 💻 Requisitos
 
 - Java 21 o superior
 - JavaFX 21 o superior
 - Maven (si se usa como sistema de construcción)
 
-## Instalación y ejecución
+## 🚀 Instalación y ejecución
 
 ### Con Maven
 
@@ -78,7 +100,7 @@ Si encuentras problemas de acceso de módulos, añade estos argumentos JVM:
 --add-opens javafx.controls/javafx.scene.control=ALL-UNNAMED
 ```
 
-## Uso
+## 🧩 Uso
 
 ### Agregar una persona
 1. Completa los campos "First Name", "Last Name" y "Birth Date"
@@ -94,31 +116,23 @@ Si encuentras problemas de acceso de módulos, añade estos argumentos JVM:
 1. Haz clic en "Restore Rows"
 2. La tabla volverá a mostrar los datos iniciales
 
-## Validaciones
+## ✅ Validaciones
 
 La aplicación valida:
 - **Nombre**: Debe contener al menos un carácter no vacío
 - **Apellido**: Debe contener al menos un carácter no vacío
 - **Fecha de nacimiento**: No puede estar en el futuro
 
-## Categorías de edad
 
-El sistema clasifica automáticamente a las personas según su edad:
-- **BABY**: 0-1 años
-- **CHILD**: 2-12 años
-- **TEEN**: 13-19 años
-- **ADULT**: 20-50 años
-- **SENIOR**: 51+ años
-- **UNKNOWN**: Sin fecha de nacimiento
 
-## Configuración de módulos
+## 📦 Configuración de módulos
 
 El proyecto incluye un archivo `module-info.java` que configura:
 - Dependencias requeridas (JavaFX, SLF4J)
 - Apertura de paquetes para JavaFX
 - Exportación de paquetes públicos
 
-## Problemas comunes
+## ⚠️ Problemas comunes
 
 ### Error de acceso a módulos
 Si ves errores como "module javafx.base cannot access class", asegúrate de que:
@@ -131,18 +145,8 @@ Si JavaFX no se encuentra:
 2. Usa los argumentos JVM mencionados anteriormente
 3. Considera usar OpenJFX con Maven
 
-## Contribuir
 
-1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/nueva-funcionalidad`)
-3. Commit tus cambios (`git commit -am 'Añadir nueva funcionalidad'`)
-4. Push a la rama (`git push origin feature/nueva-funcionalidad`)
-5. Crea un Pull Request
 
-## Licencia
+## 👨‍💻 Autor
 
-Este proyecto es de código abierto y está disponible bajo la licencia MIT.
-
-## Autor
-
-Desarrollado como proyecto educativo para aprender JavaFX y patrones MVC.
+Arantxa Maín
