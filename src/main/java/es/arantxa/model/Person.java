@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Representa una persona con datos personales como nombre y fecha de nacimiento.
- * Incluye reglas de validación y métodos para determinar categorías de edad.
+ * Incluye reglas de validación y funciones para determinar categorías de edad.
  */
 public class Person {
     private static AtomicInteger personSequence = new AtomicInteger(0);

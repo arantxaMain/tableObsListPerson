@@ -97,7 +97,7 @@ public class TablaController implements Initializable {
      * Crea una nueva persona con los datos ingresados y la guarda en la base de
      * datos.
      *
-     * @param event el evento de acción que desencadenó este método
+     * @param event el evento de acción que desencadenó esta función
      */
     @FXML
     void btnAddClick(ActionEvent event) {
@@ -133,7 +133,7 @@ public class TablaController implements Initializable {
      * Maneja el evento de clic en el botón de eliminar.
      * Elimina las personas seleccionadas de la base de datos.
      *
-     * @param event el evento de acción que desencadenó este método
+     * @param event el evento de acción que desencadenó esta función
      */
     @FXML
     void btnDeleteClick(ActionEvent event) {
@@ -177,7 +177,7 @@ public class TablaController implements Initializable {
      * Borra todas las personas de la base de datos y reinserta las personas
      * del backup para restaurar el estado inicial de la tabla.
      *
-     * @param event el evento de acción que desencadenó este método
+     * @param event el evento de acción que desencadenó esta función
      */
     @FXML
     void btnRestoreClick(ActionEvent event) {
