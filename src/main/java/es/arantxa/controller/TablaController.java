@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URL;
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,14 +46,16 @@ public class TablaController implements Initializable {
     private ObservableList<Person> personList;
     private ObservableList<Person> backupList;
     private PersonDAO personDAO;
+    private ResourceBundle resources;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        logger.info("Inicializando TablaController...");
+        this.resources = resources;
+        logger.info(resources.getString("log.init"));
         personDAO = new PersonDAO();
         setupTableColumns();
         loadInitialData();
-        logger.info("Tabla inicializada con {} personas.", personList.size());
+        logger.info(MessageFormat.format(resources.getString("log.tableInit"), personList.size()));
     }
 
     /**
@@ -63,12 +66,12 @@ public class TablaController implements Initializable {
         tableView.getColumns().clear();
 
         tableView.getSelectionModel().setSelectionMode(javafx.scene.control.SelectionMode.MULTIPLE);
-        
+
         tableView.getColumns().add(PersonTableUtil.getIdColumn());
         tableView.getColumns().add(PersonTableUtil.getFirstNameColumn());
         tableView.getColumns().add(PersonTableUtil.getLastNameColumn());
         tableView.getColumns().add(PersonTableUtil.getBirthDateColumn());
-        logger.debug("Columnas de la tabla configuradas con selección múltiple.");
+        logger.debug(resources.getString("log.columnsConfigured"));
     }
 
     /**
@@ -80,12 +83,13 @@ public class TablaController implements Initializable {
             personList = personDAO.listarPersonas();
             backupList = FXCollections.observableArrayList(personList);
             tableView.setItems(personList);
-            logger.debug("Datos iniciales cargados y backup creado.");
+            logger.debug(resources.getString("log.dataLoaded"));
         } catch (Exception e) {
             logger.error("Error al cargar datos desde la base de datos", e);
-            AlertUtil.mostrarError("Problema de conexión",
-                    "No se pudieron cargar los datos desde la base de datos.\n" +
-                            "Error: " + e.getMessage());
+            AlertUtil.mostrarError(
+                    resources.getString("alert.error.connection"),
+                    MessageFormat.format(resources.getString("alert.error.connectionMsg"), e.getMessage())
+            );
             personList = FXCollections.observableArrayList();
             backupList = FXCollections.observableArrayList();
             tableView.setItems(personList);
@@ -114,17 +118,18 @@ public class TablaController implements Initializable {
                     personList.clear();
                     personList.addAll(personDAO.listarPersonas());
 
-                    logger.info("Persona agregada: {}", newPerson);
+                    logger.info(MessageFormat.format(resources.getString("log.personAdded"), newPerson));
                     clearInputFields();
                 }
             } catch (Exception e) {
                 logger.error("Error al insertar persona en la base de datos", e);
-                AlertUtil.mostrarError("Error al guardar",
-                        "No se pudo guardar la persona en la base de datos.\n" +
-                                "Error: " + e.getMessage());
+                AlertUtil.mostrarError(
+                        resources.getString("alert.error.save"),
+                        MessageFormat.format(resources.getString("alert.error.saveMsg"), e.getMessage())
+                );
             }
         } else {
-            logger.warn("Error al agregar persona: {}", errors);
+            logger.warn(MessageFormat.format(resources.getString("log.addError"), errors));
             AlertUtil.mostrarErrorValidacion(errors);
         }
     }
@@ -140,18 +145,20 @@ public class TablaController implements Initializable {
         ObservableList<Person> selectedPersons = tableView.getSelectionModel().getSelectedItems();
 
         if (selectedPersons.isEmpty()) {
-            logger.info("Intento de eliminar sin selección.");
-            AlertUtil.mostrarInformacion("No hay filas seleccionadas",
-                    "Por favor, selecciona al menos una fila para eliminar.");
+            logger.info(resources.getString("log.deleteAttempt"));
+            AlertUtil.mostrarInformacion(
+                    resources.getString("alert.info.noSelection"),
+                    resources.getString("alert.info.noSelectionMsg")
+            );
             return;
         }
-        
-        String mensaje = selectedPersons.size() == 1 
-            ? "¿Estás seguro de que deseas eliminar la persona seleccionada?" 
-            : "¿Estás seguro de que deseas eliminar las " + selectedPersons.size() + " personas seleccionadas?";
-            
-        if (!AlertUtil.mostrarConfirmacion("Confirmar eliminación", mensaje)) {
-            logger.info("Eliminación cancelada por el usuario.");
+
+        String mensaje = selectedPersons.size() == 1
+                ? resources.getString("alert.confirm.deleteSingle")
+                : MessageFormat.format(resources.getString("alert.confirm.deleteMultiple"), selectedPersons.size());
+
+        if (!AlertUtil.mostrarConfirmacion(resources.getString("alert.confirm.delete"), mensaje)) {
+            logger.info(resources.getString("log.deleteCancelled"));
             return;
         }
 
@@ -163,12 +170,13 @@ public class TablaController implements Initializable {
             personList.clear();
             personList.addAll(personDAO.listarPersonas());
 
-            logger.info("Personas eliminadas: {}", selectedPersons);
+            logger.info(MessageFormat.format(resources.getString("log.personsDeleted"), selectedPersons));
         } catch (Exception e) {
             logger.error("Error al eliminar personas de la base de datos", e);
-            AlertUtil.mostrarError("Error al eliminar",
-                    "No se pudieron eliminar las personas seleccionadas.\n" +
-                            "Error: " + e.getMessage());
+            AlertUtil.mostrarError(
+                    resources.getString("alert.error.delete"),
+                    MessageFormat.format(resources.getString("alert.error.deleteMsg"), e.getMessage())
+            );
         }
     }
 
@@ -181,12 +189,13 @@ public class TablaController implements Initializable {
      */
     @FXML
     void btnRestoreClick(ActionEvent event) {
-        if (!AlertUtil.mostrarConfirmacion("Confirmar restauración", 
-                "¿Estás seguro de que deseas restaurar la tabla a su estado inicial?\nEsta acción eliminará todos los cambios realizados.")) {
-            logger.info("Restauración cancelada por el usuario.");
+        if (!AlertUtil.mostrarConfirmacion(
+                resources.getString("alert.confirm.restore"),
+                resources.getString("alert.confirm.restoreMsg"))) {
+            logger.info(resources.getString("log.restoreCancelled"));
             return;
         }
-        
+
         try {
             personDAO.borrarTodasPersonas(personList);
 
@@ -197,12 +206,13 @@ public class TablaController implements Initializable {
             personList.clear();
             personList.addAll(personDAO.listarPersonas());
 
-            logger.info("Lista restaurada a estado inicial con {} personas.", backupList.size());
+            logger.info(MessageFormat.format(resources.getString("log.listRestored"), backupList.size()));
         } catch (Exception e) {
             logger.error("Error al restaurar la lista de personas", e);
-            AlertUtil.mostrarError("Error al restaurar",
-                    "No se pudo restaurar la lista de personas.\n" +
-                            "Error: " + e.getMessage());
+            AlertUtil.mostrarError(
+                    resources.getString("alert.error.restore"),
+                    MessageFormat.format(resources.getString("alert.error.restoreMsg"), e.getMessage())
+            );
         }
     }
 
@@ -213,6 +223,6 @@ public class TablaController implements Initializable {
         txtFirstName.clear();
         txtLastName.clear();
         dateBirth.setValue(null);
-        logger.debug("Campos de entrada limpiados.");
+        logger.debug(resources.getString("log.fieldsCleared"));
     }
 }
