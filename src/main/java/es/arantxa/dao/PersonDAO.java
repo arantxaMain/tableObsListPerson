@@ -65,6 +65,25 @@ public class PersonDAO {
     }
 
     /**
+     * Elimina todas las personas de la base de datos.
+     *
+     * @param listaPersonas la lista de objetos {@link es.arantxa.model.Person} que se desean eliminar
+     * @return {@code true} si se eliminaron todas las personas con éxito,
+     * {@code false} si no se eliminaron ninguna persona
+     * @throws Exception si ocurre un error al conectar con la base de datos o ejecutar la operación
+     */
+    public boolean borrarTodasPersonas(ObservableList<Person> listaPersonas) throws Exception {
+        String sql = "TRUNCATE TABLE personas";
+
+        try (Connection conn = DBConnection.conexion();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.executeUpdate();
+            return true;
+        }
+    }
+
+    /**
      * Inserta una nueva persona en la base de datos con los valores
      * proporcionados en el objeto {@link es.arantxa.model.Person}.
      *
@@ -86,8 +105,6 @@ public class PersonDAO {
 
             int filasAfectadas = stmt.executeUpdate();
             return filasAfectadas > 0;
-
         }
     }
-
 }
