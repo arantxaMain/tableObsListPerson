@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Locale;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 /**
@@ -40,6 +41,9 @@ public class App extends Application {
             FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("/fxml/tabla.fxml"), bundle);
             Parent root = fxmlLoader.load();
             Scene scene = new Scene(root);
+
+            String url = Objects.requireNonNull(getClass().getResource("/css/styles.css")).toString();
+            scene.getStylesheets().add(url);
 
             stage.setScene(scene);
             stage.setTitle("Tableview from an observableList");
