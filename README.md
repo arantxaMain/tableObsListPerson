@@ -61,7 +61,11 @@ src/
 La aplicación utiliza una base de datos para persistir la información de las personas. La configuración se realiza mediante el archivo `db.properties` en el directorio `resources`.
 
 ```properties
-db.url=url de la base de datos
+db.url=jdbc:mariadb://localhost:puerto/bbdd
+# cambia: 
+# puerto -> tu puerto utilizado
+# bbdd -> el nombre de tu base de datos
+
 db.user=usuario
 db.password=contraseña
 ```
