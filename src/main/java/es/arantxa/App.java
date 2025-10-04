@@ -8,6 +8,10 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Locale;
+import java.util.Objects;
+import java.util.ResourceBundle;
+
 /**
  * Clase principal de la aplicación JavaFX.
  * Se encarga de iniciar la interfaz gráfica cargando el archivo FXML
@@ -25,16 +29,21 @@ public class App extends Application {
      * y configura la ventana principal.
      *
      * @param stage la ventana principal de la aplicación
-     * @throws Exception si ocurre un error al cargar el FXML
      */
     @Override
     public void start(Stage stage) {
         logger.info("Iniciando la aplicación");
 
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("/fxml/tabla.fxml"));
+            Locale locale = new Locale("es");
+            ResourceBundle bundle = ResourceBundle.getBundle("textos", locale);
+
+            FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("/fxml/tabla.fxml"), bundle);
             Parent root = fxmlLoader.load();
             Scene scene = new Scene(root);
+
+            String url = Objects.requireNonNull(getClass().getResource("/css/styles.css")).toString();
+            scene.getStylesheets().add(url);
 
             stage.setScene(scene);
             stage.setTitle("Tableview from an observableList");
